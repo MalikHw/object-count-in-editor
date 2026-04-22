@@ -15,5 +15,23 @@
     "links": {
         "source": "https://github.com/MalikHw/object-count-in-editor/",
         "community": "https://discord.gg/G9bZ92eg2n"
+    },
+    "settings": {
+        "position": {
+            "name": "Label Position",
+            "description": "Where to display the overlay labels",
+            "type": "string",
+            "default": "top-left",
+            "one-of": [
+                "top-left",
+                "top-center",
+                "top-right",
+                "center-left",
+                "center-right",
+                "bottom-left",
+                "bottom-center",
+                "bottom-right"
+            ]
+        }
     }
 }

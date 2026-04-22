@@ -15,14 +15,14 @@ class $modify(MyEditorUI, EditorUI) {
 
         auto objLabel = CCLabelBMFont::create("Objects: 0", "chatFont.fnt");
         objLabel->setScale(0.5f);
-        objLabel->setOpacity(127); // 255 times 0.5
+        objLabel->setOpacity(127);
         objLabel->setAnchorPoint({ 0.f, 1.f });
         objLabel->setPosition({ 5.f, winSize.height - 5.f });
         objLabel->setZOrder(999);
         this->addChild(objLabel);
         m_fields->m_objectCountLabel = objLabel;
 
-        auto lenLabel = CCLabelBMFont::create("Length: Tiny", "chatFont.fnt");
+        auto lenLabel = CCLabelBMFont::create("Length: 0:00", "chatFont.fnt");
         lenLabel->setScale(0.5f);
         lenLabel->setOpacity(127);
         lenLabel->setAnchorPoint({ 0.f, 1.f });
@@ -45,13 +45,14 @@ class $modify(MyEditorUI, EditorUI) {
             fmt::format("Objects: {}", objCount).c_str()
         );
 
-        static constexpr const char* lengthNames[] = {
-            "Tiny", "Short", "Medium", "Long", "XL", "???"
-        };
-        int lenIdx = el->m_level->m_levelLength;
-        if (lenIdx < 0 || lenIdx > 4) lenIdx = 5;
+        // m_levelLength on GJBaseGameLayer is the farthest X position in units
+        // timeForPos converts that to seconds based on speed portals
+        float totalSecs = el->timeForPos({ el->m_levelLength, 0.f }, 0, 0, false, 0);
+        int mins = static_cast<int>(totalSecs) / 60;
+        int secs = static_cast<int>(totalSecs) % 60;
+
         m_fields->m_lengthLabel->setString(
-            fmt::format("Length: {}", lengthNames[lenIdx]).c_str()
+            fmt::format("Length: {}:{:02d}", mins, secs).c_str()
         );
     }
 };

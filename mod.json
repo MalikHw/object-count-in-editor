@@ -7,10 +7,10 @@
         "ios": "2.2081"
     },
     "version": "1.0.0",
-    "id": "malikhw47.objscountineditor",
-    "name": "OBJ Count In Editor",
+    "id": "malikhw47.lvlinfoineditor",
+    "name": "Level info In Editor",
     "developer": "MalikHw47",
-    "description": "Adds an objects count label in the editor",
+    "description": "Adds an objects count label and lengh in the editor",
     "tags": ["yes", "yeah"],
     "links": {
         "source": "https://github.com/MalikHw/object-count-in-editor/",
@@ -19,7 +19,7 @@
     "settings": {
         "position": {
             "name": "Label Position",
-            "description": "Where to display the overlay labels",
+            "description": "where to display the overlay labels",
             "type": "string",
             "default": "top-left",
             "one-of": [

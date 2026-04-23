@@ -17,21 +17,38 @@
         "community": "https://discord.gg/G9bZ92eg2n"
     },
     "settings": {
+        "enabled": {
+            "name": "Enabled",
+            "type": "bool",
+            "default": true
+        },
+        "show": {
+            "name": "What to show",
+            "type": "string",
+            "default": "both",
+            "one-of": ["both", "objects", "length"]
+        },
+        "size": {
+            "name": "Size",
+            "type": "float",
+            "default": 0.5,
+            "min": 0.2,
+            "max": 2.0,
+            "control": { "slider": true, "input": true }
+        },
+        "opacity": {
+            "name": "Opacity",
+            "type": "int",
+            "default": 127,
+            "min": 0,
+            "max": 255,
+            "control": { "slider": true, "input": true }
+        },
         "position": {
-            "name": "Label Position",
-            "description": "where to display the overlay labels",
+            "name": "Position",
             "type": "string",
             "default": "top-left",
-            "one-of": [
-                "top-left",
-                "top-center",
-                "top-right",
-                "center-left",
-                "center-right",
-                "bottom-left",
-                "bottom-center",
-                "bottom-right"
-            ]
+            "one-of": ["top-left", "top-center", "top-right", "center-left", "center-right", "bottom-left", "bottom-center", "bottom-right"]
         }
     }
 }

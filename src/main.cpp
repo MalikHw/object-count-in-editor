@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/EditorUI.hpp>
+
 using namespace geode::prelude;
 
 static const char* lengthNames[] = { "Tiny", "Short", "Medium", "Long", "XL", "???" };
@@ -31,37 +32,54 @@ class $modify(MyEditorUI, EditorUI) {
     bool init(LevelEditorLayer* editorLayer) {
         if (!EditorUI::init(editorLayer)) return false;
 
+        auto mod = Mod::get();
+
         auto ol = CCLabelBMFont::create("Objects: 0", "chatFont.fnt");
-        ol->setScale(0.5f);
-        ol->setOpacity(127);
         ol->setZOrder(999);
         this->addChild(ol);
         m_fields->objLabel = ol;
 
         auto ll = CCLabelBMFont::create("Length: -", "chatFont.fnt");
-        ll->setScale(0.5f);
-        ll->setOpacity(127);
         ll->setZOrder(999);
         this->addChild(ll);
         m_fields->lenLabel = ll;
 
-        repositionLabels();
-        listenForSettingChanges<std::string>("position", [this](std::string const&) {
-            repositionLabels();
-        });
+        applySettings();
+
+        listenForSettingChanges<bool>("enabled", [this](bool) { applySettings(); });
+        listenForSettingChanges<double>("size", [this](double) { applySettings(); });
+        listenForSettingChanges<int64_t>("opacity", [this](int64_t) { applySettings(); });
+        listenForSettingChanges<std::string>("show", [this](std::string const&) { applySettings(); });
+        listenForSettingChanges<std::string>("position", [this](std::string const&) { applySettings(); });
 
         this->schedule(schedule_selector(MyEditorUI::tick), 0.5f);
         return true;
     }
 
-    void repositionLabels() {
+    void applySettings() {
+        auto mod = Mod::get();
         auto ol = m_fields->objLabel;
         auto ll = m_fields->lenLabel;
         if (!ol || !ll) return;
 
+        bool enabled = mod->getSettingValue<bool>("enabled");
+        float sz = static_cast<float>(mod->getSettingValue<double>("size"));
+        int op = static_cast<int>(mod->getSettingValue<int64_t>("opacity"));
+        auto show = mod->getSettingValue<std::string>("show");
+
+        bool showObj = enabled && (show == "objects" || show == "both");
+        bool showLen = enabled && (show == "length" || show == "both");
+
+        ol->setVisible(showObj);
+        ll->setVisible(showLen);
+        ol->setScale(sz);
+        ll->setScale(sz);
+        ol->setOpacity(op);
+        ll->setOpacity(op);
+
         auto ws = CCDirector::sharedDirector()->getWinSize();
-        auto p = Mod::get()->getSettingValue<std::string>("position");
-        float lh = ol->getContentSize().height * 0.5f + 2.f;
+        auto p = mod->getSettingValue<std::string>("position");
+        float lh = ol->getContentSize().height * sz + 2.f;
         auto anchor = anchorForPos(p);
         auto bp = basePos(p, ws, lh);
 
@@ -75,13 +93,18 @@ class $modify(MyEditorUI, EditorUI) {
         auto el = m_editorLayer;
         if (!el) return;
 
-        m_fields->objLabel->setString(
-            fmt::format("Objects: {}", el->m_objectCount.value()).c_str()
-        );
+        auto show = Mod::get()->getSettingValue<std::string>("show");
 
-        int idx = el->m_level->m_levelLength;
-        if (idx < 0 || idx > 4) idx = 5;
-        auto lenStr = el->m_isPlatformer ? "Plat." : lengthNames[idx];
-        m_fields->lenLabel->setString(fmt::format("Length: {}", lenStr).c_str());
+        if (show == "objects" || show == "both")
+            m_fields->objLabel->setString(
+                fmt::format("Objects: {}", el->m_objectCount.value()).c_str()
+            );
+
+        if (show == "length" || show == "both") {
+            int idx = el->m_level->m_levelLength;
+            if (idx < 0 || idx > 4) idx = 5;
+            auto lenStr = el->m_isPlatformer ? "Plat." : lengthNames[idx];
+            m_fields->lenLabel->setString(fmt::format("Length: {}", lenStr).c_str());
+        }
     }
 };
